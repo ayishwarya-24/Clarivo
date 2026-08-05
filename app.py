@@ -53,6 +53,11 @@ sentiment_data = pd.DataFrame({
     "Count": [0, 0, 0]
 })
 
+bar_data = pd.DataFrame({
+    "Category": ["Positive", "Negative", "Neutral"],
+    "Count": [0, 0, 0]
+})
+
 uploaded_file = st.file_uploader(
     "Upload Reviews CSV",
     type=["csv"]
@@ -105,6 +110,33 @@ if uploaded_file is not None:
         for word, count in negative_words.most_common()
         if word not in stop_words
     ]
+
+    overall_sentiment = "Positive"
+    if negative_reviews > positive_reviews:
+        overall_sentiment = "Negative"
+        
+    elif neutral_reviews > positive_reviews:
+        overall_sentiment = "Neutral"
+
+    positive_topics = []
+    
+    for word, count in top_praises[:3]:
+        if len(word) > 3:
+            positive_topics.append(word)
+            
+    negative_topics = []
+    
+    for word, count in top_complaints[:3]:
+        if len(word) > 3:
+            negative_topics.append(word)
+    
+    ai_summary = f"""
+    Overall customer sentiment is {overall_sentiment.lower()}.
+    Most praised topics include:
+    {", ".join(positive_topics)}.
+    Most common complaints include:
+    {", ".join(negative_topics)}.
+    """
     
     total_reviews = len(reviews_df)
 
@@ -229,12 +261,13 @@ st.markdown("---")
 
 st.subheader("AI Insights")
 
-st.info(
-    """
-    Customers are highly satisfied with sound quality and battery life.
-    Most negative reviews mention Bluetooth connectivity and app stability.
-    """
-)
+if uploaded_file is not None:
+    st.info(ai_summary)
+
+else:
+    st.info(
+        "Upload a review dataset to generate AI-powered insights."
+    )
 
 # -----------------------------
 # REVIEWS TABLE
