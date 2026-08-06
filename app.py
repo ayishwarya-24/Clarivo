@@ -3,6 +3,30 @@ import plotly.express as px
 import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from collections import Counter
+import re
+
+def extract_phrases(text):
+
+    phrases = []
+
+    patterns = [
+        r"battery life",
+        r"sound quality",
+        r"customer service",
+        r"delivery experience",
+        r"bluetooth disconnects",
+        r"app crashes",
+        r"stopped working",
+        r"value for money"
+    ]
+
+    text = text.lower()
+
+    for pattern in patterns:
+        if pattern in text:
+            phrases.append(pattern.title())
+
+    return phrases
 
 stop_words = {"the","and","for","with","after","very","this","that","from",
     "have","has","had","was","were","are","is","a","an","of","to","in"}
@@ -31,7 +55,6 @@ with st.sidebar:
     st.write("Review Analysis")
     st.write("Insights")
     st.write("AI Assistant")
-    st.write("Settings")
 
 # -----------------------------
 # HEADER
@@ -95,21 +118,28 @@ if uploaded_file is not None:
     negative_text = " ".join(reviews_df[reviews_df["Sentiment"] == "Negative"
     ]["Review"].astype(str))
 
-    positive_words = Counter(positive_text.lower().split())
+    positive_phrases = []
+    negative_phrases = []
     
-    negative_words = Counter(negative_text.lower().split())
-    
-    top_praises = [
-        (word, count)
-        for word, count in positive_words.most_common()
-        if word not in stop_words
-    ]
+    for review in reviews_df[
+        reviews_df["Sentiment"] == "Positive"
+        ]["Review"]:
+        
+        positive_phrases.extend(
+            extract_phrases(str(review))
+        )
 
-    top_complaints = [
-        (word, count)
-        for word, count in negative_words.most_common()
-        if word not in stop_words
-    ]
+    for review in reviews_df[
+        reviews_df["Sentiment"] == "Negative"
+        ]["Review"]:
+        
+        negative_phrases.extend(
+            extract_phrases(str(review))
+        )
+    
+    top_praises = Counter(positive_phrases).most_common(5)
+    
+    top_complaints = Counter(negative_phrases).most_common(5)
 
     overall_sentiment = "Positive"
     if negative_reviews > positive_reviews:
@@ -269,16 +299,3 @@ else:
         "Upload a review dataset to generate AI-powered insights."
     )
 
-# -----------------------------
-# REVIEWS TABLE
-# -----------------------------
-
-st.subheader("Recent Reviews")
-
-if uploaded_file is not None:
-    st.dataframe(
-        reviews_df,
-        width="stretch"
-    )
-else:
-    st.info("Upload a CSV file to view reviews.")
