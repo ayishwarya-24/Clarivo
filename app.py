@@ -36,26 +36,12 @@ st.set_page_config(
     layout="wide"
 )
 
+if "page" not in st.session_state:
+    st.session_state.page = "welcome"
+
 # -----------------------------
 # SAMPLE DATA
 # -----------------------------
-
-
-
-# -----------------------------
-# SIDEBAR
-# -----------------------------
-
-with st.sidebar:
-    st.title("Clarivo")
-
-    st.markdown("---")
-
-    st.write("Dashboard")
-    st.write("Review Analysis")
-    st.write("Insights")
-    st.write("AI Assistant")
-
 
 
 total_reviews = 0
@@ -73,265 +59,341 @@ bar_data = pd.DataFrame({
     "Count": [0, 0, 0]
 })
 
-has_data = False
-
-if not has_data:
-
-    st.title("Clarivo")
-
-    st.subheader(
-        "AI-Powered Customer Feedback Intelligence Platform"
-    )
-
-    st.write(
-        """
-        Transform customer reviews into actionable insights using
-        sentiment analysis and intelligent feedback analysis.
-        """
-    )
-
-    st.markdown("---")
-
-    st.markdown("### How It Works")
+if st.session_state.page == "welcome":
 
     st.markdown("""
-    1. Upload a CSV containing customer reviews
-    2. Analyze customer sentiment automatically
-    3. Discover common praises and complaints
-    4. Generate AI-powered insights
-    """)
+    <style>
+    .hero-title {
+    font-size: 90px;
+    font-weight: 700;
+    line-height: 1;
+    }
 
-    st.markdown("---")
+    .hero-subtitle {
+    font-size: 28px;
+    margin-top: 20px;
+    }
 
-    st.markdown("### Features")
+    .hero-description {
+        font-size: 18px;
+        color: #a8a8a8;
+        line-height: 1.8;
+    }
 
-    st.success("Sentiment Analysis")
-    st.success("AI Insights")
-    st.success("Complaint Detection")
-    st.success("Interactive Analytics Dashboard")
+    .feature-card {
+    background-color: #181818;
+    padding: 25px;
+    border-radius: 18px;
+    border: 1px solid #2a2a2a;
+    margin-bottom: 20px;
+    }
 
-    st.markdown("---")
+    .feature-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
 
-    uploaded_file = st.file_uploader(
-        "Upload Reviews CSV",
-        type=["csv"]
+    .feature-text {
+        color: #b5b5b5;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    st.markdown(
+        "<div style='height:60px'></div>",
+        unsafe_allow_html=True
     )
 
-    st.caption(
-        "CSV must contain a column named 'Review'."
-    )
+    left, right = st.columns([2, 1])
 
-    if uploaded_file is not None:
-        has_data = True
+    with left:
+
+        st.markdown(
+            '<div class="hero-title">Clarivo</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<div class="hero-subtitle">Customer Feedback Intelligence Platform</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+            <div class="hero-description">
+            Transform customer reviews into actionable insights using
+            sentiment analysis, complaint detection and intelligent
+            feedback analytics.
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with right:
+
+        st.markdown("""
+        <div class="feature-card">
+            <div class="feature-title">Sentiment Analysis</div>
+            <div class="feature-text">
+            Automatically classify customer reviews as positive,
+            neutral or negative.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="feature-card">
+            <div class="feature-title">Complaint Detection</div>
+            <div class="feature-text">
+            Identify recurring customer issues and pain points.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="feature-card">
+            <div class="feature-title">AI Insights</div>
+            <div class="feature-text">
+            Generate actionable summaries from customer feedback.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([2,1,2])
+
+    with col2:
+
+        if st.button("NEXT", use_container_width=True):
+            st.session_state.page = "dashboard"
+            st.rerun()
 
 
 
-if has_data:
+if st.session_state.page == "dashboard":
 
     st.title("Clarivo Dashboard")
+
+    if st.button("← Back"):
+        st.session_state.page = "welcome"
+        st.rerun()
 
     st.caption(
         "Monitor customer sentiment and discover actionable insights."
     )
 
-    reviews_df = pd.read_csv(uploaded_file)
-    analyzer = SentimentIntensityAnalyzer()
-    sentiments = []
-    for review in reviews_df["Review"]:
-        score = analyzer.polarity_scores(str(review))
-        compound = score["compound"]
-
-        if compound >= 0.05:
-            sentiments.append("Positive")
-
-        elif compound <= -0.05:
-            sentiments.append("Negative")
-
-        else:
-            sentiments.append("Neutral")
-
-    reviews_df["Sentiment"] = sentiments
-
-    positive_phrases = []
-    negative_phrases = []
+    uploaded_file = st.file_uploader(
+    "Upload Reviews CSV",
+    type=["csv"]
+    )
     
-    for review in reviews_df[
-        reviews_df["Sentiment"] == "Positive"
-        ]["Review"]:
-        
-        positive_phrases.extend(
-            extract_phrases(str(review))
-        )
+    st.caption(
+        "CSV must contain a column named 'Review'."
+    )
 
-    for review in reviews_df[
-        reviews_df["Sentiment"] == "Negative"
-        ]["Review"]:
-        
-        negative_phrases.extend(
-            extract_phrases(str(review))
-        )
-    
-    top_praises = Counter(positive_phrases).most_common(5)
-    
-    top_complaints = Counter(negative_phrases).most_common(5)
-    
-    total_reviews = len(reviews_df)
+    if uploaded_file is None:
+        st.info(
+            "Upload a review dataset to begin analysis."
+            )
 
-    positive_reviews = len(reviews_df[reviews_df["Sentiment"] == "Positive"])
-    
-    negative_reviews = len(reviews_df[reviews_df["Sentiment"] == "Negative"])
-    
-    neutral_reviews = len(reviews_df[reviews_df["Sentiment"] == "Neutral"])
-
-    overall_sentiment = "Positive"
-    if negative_reviews > positive_reviews:
-        overall_sentiment = "Negative"
-        
-    elif neutral_reviews > positive_reviews:
-        overall_sentiment = "Neutral"
-
-    positive_topics = []
-    
-    for word, count in top_praises[:3]:
-        if len(word) > 3:
-            positive_topics.append(word)
-            
-    negative_topics = []
-    
-    for word, count in top_complaints[:3]:
-        if len(word) > 3:
-            negative_topics.append(word)
-    
-    ai_summary = f"""
-    Overall customer sentiment is {overall_sentiment.lower()}.
-    Most praised topics include:
-    {", ".join(positive_topics)}.
-    Most common complaints include:
-    {", ".join(negative_topics)}.
-    """
-
-    sentiment_data = pd.DataFrame({
-        "Sentiment": ["Positive", "Negative", "Neutral"],
-        "Count": [
-            positive_reviews,
-            negative_reviews,
-            neutral_reviews
-        ]
-    })
-
-    bar_data = pd.DataFrame({
-        "Category": ["Positive", "Negative", "Neutral"],
-        "Count": [
-            positive_reviews,
-            negative_reviews,
-            neutral_reviews
-        ]
-    })
-
-    st.success("Analysis completed")
-
-    st.subheader("Analyzed Reviews")
-
-    st.dataframe( reviews_df, width="stretch" )
-
-if has_data:
-    st.markdown("---")
-
-if has_data:
-
-# -----------------------------
-# KPI CARDS
-# -----------------------------
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric("Total Reviews", total_reviews)
-
-    with col2:
-        st.metric("Positive", positive_reviews)
-
-    with col3:
-        st.metric("Negative", negative_reviews)
-
-    with col4:
-        st.metric("Neutral", neutral_reviews)
-    st.markdown("---")
-
-    # -----------------------------
-    # CHARTS
-    # -----------------------------
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        st.subheader("Sentiment Distribution")
-
-        pie_chart = px.pie(
-            sentiment_data,
-            names="Sentiment",
-            values="Count",
-            hole=0.45
-        )
-
-        st.plotly_chart(
-        pie_chart,
-        width="stretch"
-        )
-
-    with col2:
-
-        st.subheader("Review Breakdown")
-
-        bar_chart = px.bar(
-            bar_data,
-            x="Category",
-            y="Count"
-        )
-
-        st.plotly_chart(
-        bar_chart,
-        width="stretch"
-        )
-
-    # -----------------------------
-    # PRAISES / COMPLAINTS
-    # -----------------------------
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        st.subheader("Top Praises")
-
-        if uploaded_file is not None:
-            for word, count in top_praises:
-                if len(word) > 3:
-                    st.success(f"{word} ({count})")
-
-    with col2:
-
-        st.subheader("Top Complaints")
-
-        if uploaded_file is not None:
-            for word, count in top_complaints:
-                if len(word) > 3:
-                    st.error(f"{word} ({count})")
-
-    st.markdown("---")
-
-    # -----------------------------
-    # AI INSIGHTS
-    # -----------------------------
-
-    st.subheader("AI Insights")
 
     if uploaded_file is not None:
-        st.info(ai_summary)
+        reviews_df = pd.read_csv(uploaded_file)
+        analyzer = SentimentIntensityAnalyzer()
+        sentiments = []
+        for review in reviews_df["Review"]:
+            score = analyzer.polarity_scores(str(review))
+            compound = score["compound"]
 
-    else:
-        st.info(
-            "Upload a review dataset to generate AI-powered insights."
-        )
+            if compound >= 0.05:
+                sentiments.append("Positive")
+
+            elif compound <= -0.05:
+                sentiments.append("Negative")
+
+            else:
+                sentiments.append("Neutral")
+
+        reviews_df["Sentiment"] = sentiments
+
+        positive_phrases = []
+        negative_phrases = []
+        
+        for review in reviews_df[
+            reviews_df["Sentiment"] == "Positive"
+            ]["Review"]:
+            
+            positive_phrases.extend(
+                extract_phrases(str(review))
+            )
+
+        for review in reviews_df[
+            reviews_df["Sentiment"] == "Negative"
+            ]["Review"]:
+            
+            negative_phrases.extend(
+                extract_phrases(str(review))
+            )
+        
+        top_praises = Counter(positive_phrases).most_common(5)
+        
+        top_complaints = Counter(negative_phrases).most_common(5)
+        
+        total_reviews = len(reviews_df)
+
+        positive_reviews = len(reviews_df[reviews_df["Sentiment"] == "Positive"])
+        
+        negative_reviews = len(reviews_df[reviews_df["Sentiment"] == "Negative"])
+        
+        neutral_reviews = len(reviews_df[reviews_df["Sentiment"] == "Neutral"])
+
+        overall_sentiment = "Positive"
+        if negative_reviews > positive_reviews:
+            overall_sentiment = "Negative"
+            
+        elif neutral_reviews > positive_reviews:
+            overall_sentiment = "Neutral"
+
+        positive_topics = []
+        
+        for word, count in top_praises[:3]:
+            if len(word) > 3:
+                positive_topics.append(word)
+                
+        negative_topics = []
+        
+        for word, count in top_complaints[:3]:
+            if len(word) > 3:
+                negative_topics.append(word)
+        
+        ai_summary = f"""
+        Overall customer sentiment is {overall_sentiment.lower()}.
+        Most praised topics include:
+        {", ".join(positive_topics)}.
+        Most common complaints include:
+        {", ".join(negative_topics)}.
+        """
+
+        sentiment_data = pd.DataFrame({
+            "Sentiment": ["Positive", "Negative", "Neutral"],
+            "Count": [
+                positive_reviews,
+                negative_reviews,
+                neutral_reviews
+            ]
+        })
+
+        bar_data = pd.DataFrame({
+            "Category": ["Positive", "Negative", "Neutral"],
+            "Count": [
+                positive_reviews,
+                negative_reviews,
+                neutral_reviews
+            ]
+        })
+
+        st.success("Analysis completed")
+
+        st.subheader("Analyzed Reviews")
+
+        st.dataframe( reviews_df, width="stretch" )
+
+
+
+        # -----------------------------
+        # KPI CARDS
+        # -----------------------------
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric("Total Reviews", total_reviews)
+
+        with col2:
+            st.metric("Positive", positive_reviews)
+
+        with col3:
+            st.metric("Negative", negative_reviews)
+
+        with col4:
+            st.metric("Neutral", neutral_reviews)
+        st.markdown("---")
+
+        # -----------------------------
+        # CHARTS
+        # -----------------------------
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+
+            st.subheader("Sentiment Distribution")
+
+            pie_chart = px.pie(
+                sentiment_data,
+                names="Sentiment",
+                values="Count",
+                hole=0.45
+            )
+
+            st.plotly_chart(
+            pie_chart,
+            width="stretch"
+            )
+
+        with col2:
+
+            st.subheader("Review Breakdown")
+
+            bar_chart = px.bar(
+                bar_data,
+                x="Category",
+                y="Count"
+            )
+
+            st.plotly_chart(
+            bar_chart,
+            width="stretch"
+            )
+
+        # -----------------------------
+        # PRAISES / COMPLAINTS
+        # -----------------------------
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+
+            st.subheader("Top Praises")
+
+            if uploaded_file is not None:
+                for word, count in top_praises:
+                    if len(word) > 3:
+                        st.success(f"{word} ({count})")
+
+        with col2:
+
+            st.subheader("Top Complaints")
+
+            if uploaded_file is not None:
+                for word, count in top_complaints:
+                    if len(word) > 3:
+                        st.error(f"{word} ({count})")
+
+        st.markdown("---")
+
+        # -----------------------------
+        # AI INSIGHTS
+        # -----------------------------
+
+        st.subheader("AI Insights")
+
+        if uploaded_file is not None:
+            st.info(ai_summary)
+
+        
+
 
