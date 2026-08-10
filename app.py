@@ -277,6 +277,18 @@ if st.session_state.page == "dashboard":
         
         neutral_reviews = len(reviews_df[reviews_df["Sentiment"] == "Neutral"])
 
+        positive_percent = round(
+            (positive_reviews / total_reviews) * 100, 1
+        )
+
+        negative_percent = round(
+            (negative_reviews / total_reviews) * 100, 1
+        )
+
+        neutral_percent = round(
+            (neutral_reviews / total_reviews) * 100, 1
+        )
+
         overall_sentiment = "Positive"
         if negative_reviews > positive_reviews:
             overall_sentiment = "Negative"
@@ -297,11 +309,20 @@ if st.session_state.page == "dashboard":
                 negative_topics.append(word)
         
         ai_summary = f"""
-        Overall customer sentiment is {overall_sentiment.lower()}.
-        Most praised topics include:
+        Customer sentiment is predominantly {overall_sentiment.lower()}
+        with {positive_percent}% positive reviews.
+
+        Key strengths identified by customers include
         {", ".join(positive_topics)}.
-        Most common complaints include:
+
+        The most frequently reported issues involve
         {", ".join(negative_topics)}.
+
+        Based on the current review dataset,
+        customer satisfaction appears to be driven by
+        product quality and user experience,
+        while improvements may be needed in the reported
+        complaint areas.
         """
 
         sentiment_data = pd.DataFrame({
@@ -328,6 +349,17 @@ if st.session_state.page == "dashboard":
 
         st.dataframe( reviews_df, width="stretch" )
 
+        csv_download = reviews_df.to_csv(
+            index=False
+        ).encode("utf-8")
+
+        st.download_button(
+            label="Download Analyzed Reviews",
+            data=csv_download,
+            file_name="clarivo_analysis.csv",
+            mime="text/csv"
+        )
+
 
 
         # -----------------------------
@@ -337,16 +369,28 @@ if st.session_state.page == "dashboard":
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            st.metric("Total Reviews", total_reviews)
+            st.metric(
+                "Total Reviews",
+                total_reviews
+            )
 
         with col2:
-            st.metric("Positive", positive_reviews)
+            st.metric(
+                "Positive",
+                f"{positive_percent}%"
+            )
 
         with col3:
-            st.metric("Negative", negative_reviews)
+            st.metric(
+                "Negative",
+                f"{negative_percent}%"
+            )
 
         with col4:
-            st.metric("Neutral", neutral_reviews)
+            st.metric(
+                "Neutral",
+                f"{neutral_percent}%"
+            )
         st.markdown("---")
 
         # -----------------------------
