@@ -63,20 +63,31 @@ if st.session_state.page == "welcome":
 
     st.markdown("""
     <style>
+    .block-container {
+        padding-top: 0rem;
+        padding-bottom: 1rem;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <style>
     .hero-title {
-    font-size: 90px;
-    font-weight: 700;
-    line-height: 1;
+    color: #F5F1D5;
+    font-size: 110px;
+    font-family: Georgia, serif;
     }
 
     .hero-subtitle {
     font-size: 28px;
     margin-top: 20px;
+    color: #D7B46A;
     }
 
     .hero-description {
         font-size: 18px;
-        color: #a8a8a8;
+        color: #BDBDBD;
         line-height: 1.8;
     }
 
@@ -92,10 +103,11 @@ if st.session_state.page == "welcome":
         font-size: 20px;
         font-weight: 600;
         margin-bottom: 8px;
+        color: #F5F1D5;
     }
 
     .feature-text {
-        color: #b5b5b5;
+        color: #BDBDBD;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -175,11 +187,26 @@ if st.session_state.page == "welcome":
 
 if st.session_state.page == "dashboard":
 
-    st.title("Clarivo Dashboard")
+    col1, col2 = st.columns([5, 1])
 
-    if st.button("← Back"):
-        st.session_state.page = "welcome"
-        st.rerun()
+    with col1:
+        st.markdown("""
+        <h1 style="
+            font-size: 80px;
+            color: #F4F1D8;
+            font-family: Georgia, serif;
+            margin-bottom: 0;
+        ">
+            Clarivo 
+        </h1>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        if st.button("← Back", use_container_width=True):
+            st.session_state.page = "welcome"
+            st.rerun()
 
     st.caption(
         "Monitor customer sentiment and discover actionable insights."
