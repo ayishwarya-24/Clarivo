@@ -336,22 +336,44 @@ if st.session_state.page == "dashboard":
             if len(word) > 3:
                 negative_topics.append(word)
         
+        if positive_percent >= 70:
+            health_score = "Excellent"
+        elif positive_percent >= 50:
+            health_score = "Good"
+        elif positive_percent >= 30:
+            health_score = "Fair"
+        else:
+            health_score = "Poor"
+
+        strengths = ", ".join(positive_topics) if positive_topics else "No major strengths identified"
+
+        issues = ", ".join(negative_topics) if negative_topics else "No major issues identified"
+
+        if negative_percent > 40:
+            recommendation = (
+                "Customer dissatisfaction is high. Immediate attention should be given "
+                "to recurring complaints to improve customer experience."
+            )
+        elif negative_percent > 20:
+            recommendation = (
+                "Some recurring issues were detected. Monitoring and corrective actions "
+                "are recommended."
+            )
+        else:
+            recommendation = (
+                "Customer feedback is largely positive. Focus on maintaining strengths "
+                "while continuing to monitor customer concerns."
+            )
+
+        
         ai_summary = f"""
-        Customer sentiment is predominantly {overall_sentiment.lower()}
-        with {positive_percent}% positive reviews.
-
-        Key strengths identified by customers include
-        {", ".join(positive_topics)}.
-
-        The most frequently reported issues involve
-        {", ".join(negative_topics)}.
-
-        Based on the current review dataset,
-        customer satisfaction appears to be driven by
-        product quality and user experience,
-        while improvements may be needed in the reported
-        complaint areas.
+        <b>Customer Health Score:</b> {health_score}<br>
+        <b>Overall Sentiment:</b> {overall_sentiment}<br>
+        <b>Key Strengths:</b> {strengths}<br>
+        <b>Key Issues:</b> {issues}<br>
+        <b>Recommendation:</b> {recommendation}
         """
+
 
         sentiment_data = pd.DataFrame({
             "Sentiment": ["Positive", "Negative", "Neutral"],
@@ -498,7 +520,30 @@ if st.session_state.page == "dashboard":
         st.subheader("AI Insights")
 
         if uploaded_file is not None:
-            st.info(ai_summary)
+            st.markdown(f"""
+            <div style="
+                background-color:#151515;
+                border:1px solid #2A2A2A;
+                border-radius:18px;
+                padding:18px;
+            ">
+
+            <h3 style="color:#C8B273;">
+            Customer Intelligence Summary
+            </h3>
+
+            <div style="
+                color:#F4F1D8;
+                font-size:16px;
+                line-height:1.6;
+                font-family:Arial;
+            ">
+            {ai_summary.replace(chr(10), "<br>")}
+            </div>
+
+            </div>
+            """, unsafe_allow_html=True)
+                        
 
 
         st.markdown("---")
