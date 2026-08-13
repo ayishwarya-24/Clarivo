@@ -244,15 +244,76 @@ if st.session_state.page == "dashboard":
     "Upload Reviews CSV",
     type=["csv"]
     )
+
+    if uploaded_file is None:
+        st.info("Upload a review dataset to begin analysis.")
+
+        st.markdown("---")
+
+        # KPI placeholders
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric("Total Reviews", "--")
+
+        with col2:
+            st.metric("Positive Rate", "--")
+
+        with col3:
+            st.metric("Negative Rate", "--")
+
+        with col4:
+            st.metric("Overall Sentiment", "--")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.subheader("Sentiment Distribution")
+
+            sample_pie = pd.DataFrame({
+                "Sentiment": ["Positive", "Negative", "Neutral"],
+                "Count": [1, 1, 1]
+            })
+
+            pie_chart = px.pie(
+                sample_pie,
+                names="Sentiment",
+                values="Count",
+                hole=0.45
+            )
+
+            st.plotly_chart(
+                pie_chart,
+                width="stretch"
+            )
+
+        with col2:
+            st.subheader("Review Breakdown")
+
+            sample_bar = pd.DataFrame({
+                "Category": ["Positive", "Negative", "Neutral"],
+                "Count": [1, 1, 1]
+            })
+
+            bar_chart = px.bar(
+                sample_bar,
+                x="Category",
+                y="Count"
+            )
+
+            st.plotly_chart(
+                bar_chart,
+                width="stretch"
+            )
+
+
+
     
     st.caption(
         "CSV must contain a column named 'Review'."
     )
-
-    if uploaded_file is None:
-        st.info(
-            "Upload a review dataset to begin analysis."
-            )
+    
+    
 
 
     if uploaded_file is not None:
