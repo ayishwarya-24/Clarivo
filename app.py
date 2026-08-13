@@ -36,6 +36,27 @@ st.set_page_config(
     layout="wide"
 )
 
+st.markdown("""
+<style>
+
+div[data-testid="metric-container"] {
+    background-color: #181818;
+    border: 1px solid #2A2A2A;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+[data-testid="stHeaderActionElements"] {
+    display: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
 if "page" not in st.session_state:
     st.session_state.page = "welcome"
 
@@ -188,18 +209,29 @@ if st.session_state.page == "welcome":
 if st.session_state.page == "dashboard":
 
     col1, col2 = st.columns([5, 1])
-
     with col1:
-        st.markdown("""
-        <h1 style="
-            font-size: 80px;
-            color: #F4F1D8;
-            font-family: Georgia, serif;
-            margin-bottom: 0;
-        ">
-            Clarivo 
-        </h1>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            """
+            <h1 style="
+                font-size:90px;
+                color:#F4F1D8;
+                font-family:Georgia, serif;
+                margin-bottom:0;
+            ">
+                Clarivo
+            </h1>
+
+            <div style="
+                color:#C8B273;
+                font-size:22px;
+                margin-top:-20px;
+            ">
+                Monitor customer sentiment and discover actionable insights.
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+            
 
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
@@ -207,10 +239,6 @@ if st.session_state.page == "dashboard":
         if st.button("← Back", use_container_width=True):
             st.session_state.page = "welcome"
             st.rerun()
-
-    st.caption(
-        "Monitor customer sentiment and discover actionable insights."
-    )
 
     uploaded_file = st.file_uploader(
     "Upload Reviews CSV",
@@ -376,21 +404,23 @@ if st.session_state.page == "dashboard":
 
         with col2:
             st.metric(
-                "Positive",
+                "Positive Rate",
                 f"{positive_percent}%"
             )
 
+
         with col3:
             st.metric(
-                "Negative",
+                "Negative Rate",
                 f"{negative_percent}%"
             )
 
         with col4:
             st.metric(
-                "Neutral",
-                f"{neutral_percent}%"
+                "Overall Sentiment",
+                overall_sentiment
             )
+
         st.markdown("---")
 
         # -----------------------------
@@ -422,9 +452,14 @@ if st.session_state.page == "dashboard":
             bar_chart = px.bar(
                 bar_data,
                 x="Category",
-                y="Count"
+                y="Count",
+                color="Category",
+                color_discrete_map={
+                    "Positive": "#2ECC71",
+                    "Negative": "#E74C3C",
+                    "Neutral": "#F1C40F"
+                }
             )
-
             st.plotly_chart(
             bar_chart,
             width="stretch"
@@ -464,6 +499,20 @@ if st.session_state.page == "dashboard":
 
         if uploaded_file is not None:
             st.info(ai_summary)
+
+
+        st.markdown("---")
+
+        st.markdown(
+            """
+            <div style="text-align:center;color:#888;">
+                Clarivo • AI-Powered Customer Feedback Intelligence
+                <br>
+                Built with Streamlit, Pandas, Plotly and NLP
+            </div>
+            """,
+            unsafe_allow_html=True
+)
 
         
 
