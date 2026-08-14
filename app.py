@@ -250,6 +250,10 @@ if st.session_state.page == "dashboard":
 
         st.markdown("---")
 
+        st.caption(
+        "CSV must contain a column named 'Review'."
+        )
+
         # KPI placeholders
         col1, col2, col3, col4 = st.columns(4)
 
@@ -305,15 +309,6 @@ if st.session_state.page == "dashboard":
                 bar_chart,
                 width="stretch"
             )
-
-
-
-    
-    st.caption(
-        "CSV must contain a column named 'Review'."
-    )
-    
-    
 
 
     if uploaded_file is not None:
