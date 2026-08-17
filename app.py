@@ -36,6 +36,7 @@ st.set_page_config(
     layout="wide"
 )
 
+
 st.markdown("""
 <style>
 
@@ -44,6 +45,20 @@ div[data-testid="metric-container"] {
     border: 1px solid #2A2A2A;
     padding: 20px;
     border-radius: 15px;
+}
+
+.stButton > button {
+    background-color:#C8B273;
+    color:black;
+    border:none;
+    border-radius:12px;
+    font-weight:bold;
+    height:55px;
+    font-size:18px;
+}
+
+.stButton > button:hover {
+    background-color:#D8C486;
 }
 
 </style>
@@ -113,10 +128,14 @@ if st.session_state.page == "welcome":
     }
 
     .feature-card {
-    background-color: #181818;
+    background: linear-gradient(
+        145deg,
+        #1D1D1D,
+        #131313
+    );
     padding: 25px;
     border-radius: 18px;
-    border: 1px solid #2a2a2a;
+    border: 1px solid #343434;
     margin-bottom: 20px;
     }
 
@@ -130,14 +149,11 @@ if st.session_state.page == "welcome":
     .feature-text {
         color: #BDBDBD;
     }
+    .feature-card:hover {
+    border: 1px solid #C8B273;
+    }
     </style>
     """, unsafe_allow_html=True)
-
-    st.markdown("<br><br><br>", unsafe_allow_html=True)
-    st.markdown(
-        "<div style='height:60px'></div>",
-        unsafe_allow_html=True
-    )
 
     left, right = st.columns([2, 1])
 
@@ -163,6 +179,7 @@ if st.session_state.page == "welcome":
             """,
             unsafe_allow_html=True
         )
+
 
     with right:
 
@@ -204,7 +221,7 @@ if st.session_state.page == "welcome":
             st.session_state.page = "dashboard"
             st.rerun()
 
-
+    
 
 if st.session_state.page == "dashboard":
 
