@@ -6,13 +6,11 @@ Clarivo is an AI-powered customer feedback intelligence platform that helps busi
 
 ## Features
 
-- Sentiment Analysis using VADER NLP
+- Sentiment Analysis using NLP
 - Customer Health Score
 - AI-generated feedback summaries
 - Complaint Detection
 - Top Praises and Complaints Extraction
-- Interactive Dashboard
-- CSV Upload Support
 - Download Analyzed Results
 - Visual Analytics with Plotly
 
